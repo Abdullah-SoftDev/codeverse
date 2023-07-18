@@ -146,10 +146,10 @@ const Navbar = () => {
               </Menu>
             ) : (
               <Link
-                href="/signIn"
+                href="/login"
                 className="sm:ml-6 inline-flex items-center px-4 py-2 border  text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-700 focus:outline-none"
               >
-                Sign In
+                Log In
               </Link>
             )}
           </div>
