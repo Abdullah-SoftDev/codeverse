@@ -10,3 +10,15 @@ export type PostForm = {
     createdAt?: Timestamp;
     images: (string | File)[];
   };
+
+  export type PostData = {
+    postId: string,
+    title: string,
+    desc: string,
+    websiteURL: string,
+    twitterURL: string,
+    githubURL: string,
+    category: string,
+    createdAt?: Timestamp;
+    images: string[];
+  };
