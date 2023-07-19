@@ -1,8 +1,14 @@
 "use client";
 
+import { auth, db, storage } from "@/firebase/firebaseConfig";
+import { PostForm } from "@/types/typescript.types";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { Fragment, useState } from "react";
+import { doc, collection, Timestamp, WriteBatch, serverTimestamp, writeBatch } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, Fragment, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const categories = [
   "Frontend",
@@ -21,10 +27,135 @@ const categories = [
 ];
 
 const Form = () => {
-  const [selected, setSelected] = useState(categories[3]);
+  const [selected, setSelected] = useState(categories[2]);
+  const router = useRouter()
+  const [user] = useAuthState(auth);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [post, setPost] = useState<PostForm>({
+    images: [],
+    title: "",
+    desc: "",
+    websiteURL: "",
+    twitterURL: "",
+    githubURL: "",
+    category: selected,
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setPost((post) => ({
+      ...post,
+      [name]: value,
+    }));
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelected(value); // Update the selected value
+    setPost((post) => ({
+      ...post,
+      category: value, // Update the category field in the post state
+    }));
+  };
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (fileList) {
+      const fileArray = Array.from(fileList);
+      setPost((post) => ({
+        ...post,
+        images: fileArray,
+      }));
+    }
+  }
+
+  const downloadURLs: string[] = [];
+  const handleSubmitImage = async () => {
+    const storageRef = ref(storage, `images/${user?.uid}/${Timestamp.now().seconds}/`);
+
+    try {
+      for (let i = 0; i < post.images.length; i++) {
+        const file = post.images[i];
+        const filePath = `${storageRef.fullPath}/${(file as File).name}`;
+
+        await uploadBytes(ref(storage, filePath), file as Blob);
+
+        const fileRef = ref(storage, filePath);
+        const downloadURL = await getDownloadURL(fileRef);
+
+        downloadURLs.push(downloadURL);
+      }
+    } catch (error) {
+      alert("Error occurred while uploading images: " + error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { images, title, desc, websiteURL, twitterURL, githubURL, category } = post;
+    if (!title || !category || !websiteURL || !githubURL || !desc || !twitterURL || !images) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    const postId = doc(collection(db, "ids")).id;
+
+    const userPostRef = doc(db, `users/${user?.uid}/posts`, postId);
+    const generalPostRef = doc(db, "posts", postId);
+
+    try {
+      setLoading(true);
+
+      await handleSubmitImage();
+      const batch: WriteBatch = writeBatch(db);
+      const newpost = {
+        postId,
+        images: downloadURLs,
+        title,
+        desc,
+        websiteURL,
+        twitterURL,
+        githubURL,
+        category,
+        createdAt: serverTimestamp() as Timestamp,
+      };
+      batch.set(userPostRef, newpost);
+      batch.set(generalPostRef, newpost);
+      await batch.commit();
+      setPost({
+        images: [],
+        title: "",
+        desc: "",
+        websiteURL: "",
+        twitterURL: "",
+        githubURL: "",
+        category: "",
+      });
+
+      setLoading(false);
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      setLoading(false);
+      alert("Error occurred while submitting the form: " + error);
+    }
+  };
+
+
+  const handleImageClick = (index: number) => {
+    setPost((post) => {
+      const updatedImages = [...post.images];
+      updatedImages.splice(index, 1);
+      return {
+        ...post,
+        images: updatedImages,
+      };
+    });
+  };
 
   return (
-    <form className="mx-auto max-w-xl px-4 lg:px-0 md:py-6 py-4">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-xl px-4 lg:px-0 md:py-6 py-4">
       <div className="py-14 space-y-6">
         <div>
           <label
@@ -34,7 +165,19 @@ const Form = () => {
             Choose images for your project{" "}
           </label>
           <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-            <div className="space-y-1 text-center">
+            {post.images.length > 0 ? (
+              <div className="space-y-1 text-center">
+                {post.images.map((file, index) => (
+                  <p
+                    className="cursor-pointer"
+                    key={index}
+                    onClick={() => handleImageClick(index)}
+                  >
+                    {typeof file === "string" ? file : (file as File).name}
+                  </p>
+                ))}
+              </div>
+            ) : (<div className="space-y-1 text-center">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
                 stroke="currentColor"
@@ -56,6 +199,7 @@ const Form = () => {
                 >
                   <span>Upload a file</span>
                   <input
+                    onChange={handleImageChange}
                     id="fileUpload"
                     name="fileUpload"
                     type="file"
@@ -65,100 +209,79 @@ const Form = () => {
                   />
                 </label>
               </div>
-            </div>
+            </div>)}
           </div>
         </div>
-
         <div>
-          <label
-            htmlFor="first-name"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
+          <label className="block text-sm font-medium leading-6 text-gray-900">
             Title{" "}
           </label>
           <div className="mt-2">
             <input
+              onChange={handleInputChange}
               type="text"
-              name="first-name"
-              id="first-name"
-              autoComplete="given-name"
+              name="title"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
         <div>
-          <label
-            htmlFor="last-name"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
+          <label className="block text-sm font-medium leading-6 text-gray-900">
             Description{" "}
           </label>
           <div className="mt-2">
             <input
+              onChange={handleInputChange}
               type="text"
-              name="last-name"
-              id="last-name"
-              autoComplete="family-name"
+              name="desc"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Website URL{" "}
+          <label className="block text-sm font-medium leading-6 text-gray-900">
+            Website URL
           </label>
           <div className="mt-2">
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              onChange={handleInputChange}
+              name="websiteURL"
+              type="text"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
         <div>
-          <label
-            htmlFor="street-address"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
+          <label className="block text-sm font-medium leading-6 text-gray-900">
             Twitter URL{" "}
           </label>
           <div className="mt-2">
             <input
+              onChange={handleInputChange}
               type="text"
-              name="street-address"
-              id="street-address"
-              autoComplete="street-address"
+              name="twitterURL"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
         <div>
-          <label
-            htmlFor="street-address"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
+          <label className="block text-sm font-medium leading-6 text-gray-900">
             GitHub URL{" "}
           </label>
           <div className="mt-2">
             <input
+              onChange={handleInputChange}
               type="text"
-              name="street-address"
-              id="street-address"
-              autoComplete="street-address"
+              name="githubURL"
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
         </div>
-        <Listbox value={selected} onChange={setSelected}>
+        <Listbox value={selected} onChange={handleCategoryChange}>
           {({ open }) => (
             <>
               <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
-                Assigned to
+                Categories
               </Listbox.Label>
               <div className="relative mt-2">
                 <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
@@ -185,10 +308,9 @@ const Form = () => {
                       <Listbox.Option
                         key={category}
                         className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-3 pr-9 ${
-                            active
-                              ? "bg-indigo-600 text-white"
-                              : "text-gray-900"
+                          `relative cursor-default select-none py-2 pl-3 pr-9 ${active
+                            ? "bg-indigo-600 text-white"
+                            : "text-gray-900"
                           }`
                         }
                         value={category}
@@ -197,9 +319,8 @@ const Form = () => {
                           <>
                             <div className="flex items-center">
                               <span
-                                className={`${
-                                  selected ? "font-semibold" : "font-normal"
-                                } ml-3 block truncate`}
+                                className={`${selected ? "font-semibold" : "font-normal"
+                                  } ml-3 block truncate`}
                               >
                                 {category}
                               </span>
@@ -207,9 +328,8 @@ const Form = () => {
 
                             {selected && (
                               <span
-                                className={`${
-                                  active ? "text-white" : "text-indigo-600"
-                                } absolute inset-y-0 right-0 flex items-center pr-4`}
+                                className={`${active ? "text-white" : "text-indigo-600"
+                                  } absolute inset-y-0 right-0 flex items-center pr-4`}
                               >
                                 <CheckIcon
                                   className="h-5 w-5"
@@ -230,17 +350,20 @@ const Form = () => {
       </div>
 
       <div className="flex pt-5 items-center justify-end gap-x-6">
-      <button
-            type="button"
-            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={`ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}>
-                Post
-          </button>
+        <button
+          type="button"
+          className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Cancel
+        </button>
+        <button
+  type="submit"
+  className={`ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? "opacity-50 cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed" : ""}`}
+  disabled={loading}
+>
+  {loading ? "Loading..." : "Post"}
+</button>
+
       </div>
     </form>
   );
