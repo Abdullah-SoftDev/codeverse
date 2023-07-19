@@ -13,6 +13,7 @@ export type PostForm = {
 
   export type PostData = {
     postId: string,
+    creatorUid:string,
     title: string,
     desc: string,
     websiteURL: string,
