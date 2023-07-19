@@ -1,8 +1,11 @@
+'use client'
 import { PostData } from '@/types/typescript.types'
-import { BookmarkIcon, ShareIcon, HeartIcon } from '@heroicons/react/24/outline'
+import { BookmarkIcon, HeartIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import React from 'react'
+import ShareButton from './ShareButton'
 const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images }: PostData) => {
+    
     return (
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="aspect-w-3 aspect-h-4 relative group">
@@ -45,7 +48,7 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
             <div className="px-4 pb-3 flex items-center w-full justify-between">
                 <div className="flex space-x-3">
                     <BookmarkIcon className="w-5 h-5 cursor-pointer" />
-                    <ShareIcon className="w-5 h-5 cursor-pointer" />
+                 <ShareButton title={title} desc={desc}/>
                 </div>
                 <div className="flex">
                     <HeartIcon className="w-5 h-5 cursor-pointer" />
