@@ -1,4 +1,5 @@
 "use client";
+import Modal from "@/components/Modal";
 import Postcard from "@/components/Postcard";
 import { auth, db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
@@ -36,17 +37,13 @@ const page = () => {
     }
   }, [user]);
 
-  if (loading) {
-    return (
-      <div className="pt-2">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
   return (
-    <>
+    <Modal>
+      {loading && <div className="pt-2 text-center text-red-500">Loading...</div>}
       <div className="max-w-5xl mx-auto px-2 xl:px-0 pt-10 sm:pt-14 pb-14">
+      <h1 className="bg-gradient-to-r from-purple-500 via-pink-600 to-rose-500 bg-clip-text text-transparent text-center display text-3xl h-full md:text-4xl font-bold pb-1">
+            Welcome to your personalised projects feed
+        </h1>
         {/* ... (rest of the JSX) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6 sm:pt-14">
           {myProject.map((post) => (
@@ -54,7 +51,7 @@ const page = () => {
           ))}
         </div>
       </div>
-    </>
+    </Modal>
   );
 };
 
