@@ -31,10 +31,8 @@ const Menubar = () => {
           key={index}
           className={`px-4 py-2 rounded-md cursor-pointer hover:text-pink-500 w-full whitespace-nowrap scrollbar-hide focus:outline-none ${
             activeCategory === category && "bg-gray-100" 
-          }`}
-          onClick={() => handleClick(category)}
-        >
-          <Link href={``}>
+          }`}onClick={() => handleClick(category)}>
+          <Link href={`/filter?category=${category}`}>
             {category}
           </Link>
         </button>
