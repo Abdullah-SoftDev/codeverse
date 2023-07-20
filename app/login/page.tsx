@@ -101,7 +101,7 @@ const Page = () => {
                 <span>Login with Google</span>
               </button>
             </div>
-            <div className="my-5">
+            {/* <div className="my-5">
               <button
                 onClick={handleTwitterSignIn}
                 className={`w-full text-center py-3 my-3 border flex space-x-2 items-center justify-center border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150 ${twitterLoading ? "opacity-50 cursor-not-allowed" : ""
@@ -123,7 +123,7 @@ const Page = () => {
                 )}
                 <span>Login with Twitter</span>
               </button>
-            </div>
+            </div> */}
             <div className="my-5">
               <button
                 onClick={handleGithubSignIn}

@@ -52,6 +52,14 @@ const Navbar = () => {
                   My projects
                 </Link>
               )}
+              {user && (
+                <Link
+                  href="/bookmark"
+                  className=" text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1  text-sm font-medium"
+                >
+                  My Bookmark
+                </Link>
+              )}
             </div>
           </div>
 
@@ -126,6 +134,19 @@ const Navbar = () => {
                         >
                           My Projects
                         </Link>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                        href="/bookmark"
+                        className={classNames(
+                          active ? "bg-gray-100" : "",
+                          "lg:hidden inline-flex px-4 py-2 text-sm text-gray-700 w-full"
+                        )}
+                      >
+                        My Bookmark
+                      </Link>
                       )}
                     </Menu.Item>
                     <Menu.Item>

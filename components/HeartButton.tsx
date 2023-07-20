@@ -65,10 +65,10 @@ const HeartButton = ({
           className="w-5 h-5 text-gray-300 cursor-pointer"
         />
       ) : (
-        <HeartIcon
+        <img
           onClick={removeHeart}
           className="w-5 h-5 text-rose-500 cursor-pointer"
-        />
+          src="https://www.svgrepo.com/show/407319/red-heart.svg" />
       )}
       <span className="text-sm text-gray-600 ml-1">{dbLike}</span>
     </div>

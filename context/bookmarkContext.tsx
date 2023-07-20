@@ -1,6 +1,6 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getDocs, collection, doc, getDoc, DocumentData, deleteDoc } from 'firebase/firestore';
+import { getDocs, collection, doc, getDoc, DocumentData, deleteDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase/firebaseConfig';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -9,6 +9,7 @@ type BookmarkedPostsContextType = {
   bookmarkedPosts: DocumentData[];
   fetchBookmarkedPosts: (user: any) => Promise<DocumentData[]>;
   removeBookmark: (postId: string, user: any) => Promise<void>;
+  addBookmark: (postId: string) => Promise<void>;
 };
 
 // Create the initial context
@@ -16,6 +17,7 @@ const BookmarkedPostsContext = createContext<BookmarkedPostsContextType>({
   bookmarkedPosts: [],
   fetchBookmarkedPosts: async () => [],
   removeBookmark: async () => {},
+  addBookmark: async () => {},
 });
 
 // Create a helper function to fetch bookmarked posts
@@ -52,14 +54,16 @@ const fetchBookmarkedPosts = async (user: any): Promise<DocumentData[]> => {
 };
 
 // Create the Context Provider component
-const BookmarkedPostsProvider = ({ children }:any) => {
+const BookmarkedPostsProvider = ({ children }: any) => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState<DocumentData[]>([]);
   const [user] = useAuthState(auth);
 
   useEffect(() => {
     const fetchAndSetBookmarkedPosts = async () => {
-      const bookmarkedPostsDetails = await fetchBookmarkedPosts(user);
-      setBookmarkedPosts(bookmarkedPostsDetails);
+      if (user) {
+        const bookmarkedPostsDetails = await fetchBookmarkedPosts(user);
+        setBookmarkedPosts(bookmarkedPostsDetails);
+      }
     };
 
     fetchAndSetBookmarkedPosts();
@@ -69,7 +73,7 @@ const BookmarkedPostsProvider = ({ children }:any) => {
     if (!user || !postId) {
       return;
     }
-    const userPostHeartRef = doc(db, `users/${user}/bookmarks/${postId}`);
+    const userPostHeartRef = doc(db, `users/${user.uid}/bookmarks/${postId}`);
     try {
       await deleteDoc(userPostHeartRef);
       // After removing the bookmark, fetch and update the bookmarkedPosts state
@@ -82,8 +86,26 @@ const BookmarkedPostsProvider = ({ children }:any) => {
     }
   };
 
+  const addBookmark = async (postId: string) => {
+    if (!user || !postId) {
+      return;
+    }
+    const userPostHeartRef = doc(db, `users/${user.uid}/bookmarks/${postId}`);
+    try {
+      await setDoc(userPostHeartRef, { postId: postId });
+
+      // Fetch and update the bookmarked posts after adding a bookmark
+      const updatedBookmarkedPosts = await fetchBookmarkedPosts(user);
+      setBookmarkedPosts(updatedBookmarkedPosts);
+    } catch (error) {
+      alert("Add Heart Error: " + error);
+    }
+  };
+
   return (
-    <BookmarkedPostsContext.Provider value={{ bookmarkedPosts, fetchBookmarkedPosts, removeBookmark }}>
+    <BookmarkedPostsContext.Provider
+      value={{ bookmarkedPosts, fetchBookmarkedPosts, removeBookmark, addBookmark }}
+    >
       {children}
     </BookmarkedPostsContext.Provider>
   );
