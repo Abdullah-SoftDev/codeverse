@@ -1,4 +1,5 @@
 import Modal from "@/components/Modal";
+import RecommendedProductSlider from "@/components/RecommendedProductSlider";
 import { db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
 import { getDoc, doc, DocumentData } from "firebase/firestore";
@@ -59,6 +60,7 @@ const Page = async ({ params,searchParams  }: { params: { projectId: string , cr
           Github Url
       </Link>
     </div>
+    <RecommendedProductSlider projectId={projectId} creatorUid={creatorUid} />
       </div>
     </div>
      </Modal>
