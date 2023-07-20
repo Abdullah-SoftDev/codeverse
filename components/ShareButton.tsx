@@ -2,7 +2,7 @@
 import { ShareIcon } from '@heroicons/react/24/outline';
 import React from 'react'
 
-const ShareButton = ({ title, }: { title: string}) => {
+const ShareButton = ({ title }: { title: string}) => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({

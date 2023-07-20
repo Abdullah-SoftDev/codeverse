@@ -42,7 +42,7 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
                     src={images[0]}
                     alt=""
                 />
-                <div className="title absolute bottom-0 px-4 py-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-0 px-4 py-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <h3 className="text-xl font-medium">{title}</h3>
                 </div>
             </div>
