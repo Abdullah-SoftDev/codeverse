@@ -5,11 +5,9 @@ import Postcard from "./Postcard";
 
 
 export default async function Feed() {
-  const LIMIT = 5;
   const snippetQuery = query(
     collection(db, "posts"),
     orderBy("createdAt", "desc"),
-    limit(LIMIT)
   );
   const snippetDocs = await getDocs(snippetQuery);
   let posts: PostData[] = snippetDocs.docs.map((doc) => {

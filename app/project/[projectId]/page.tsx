@@ -29,7 +29,6 @@ const Page = async ({ params,searchParams  }: { params: { projectId: string , cr
           </h1>
         </div>
         <div className="mt-6 prose prose-indigo prose-lg text-gray-500 mx-auto">
-       
           <figure>
             <img
               className="w-full rounded-lg"
@@ -50,6 +49,16 @@ const Page = async ({ params,searchParams  }: { params: { projectId: string , cr
          {data.desc}
           </p>
         </div>
+        <div className="flex justify-center space-x-6 mt-6">
+      <Link target="_blank" href={data.websiteURL}
+        className="sm:ml-6 inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+          Live Url🚀
+      </Link>
+      <Link target="_blank" href={data.githubURL}
+      className="sm:ml-6 inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-900 focus:outline-none">
+          Github Url
+      </Link>
+    </div>
       </div>
     </div>
      </Modal>

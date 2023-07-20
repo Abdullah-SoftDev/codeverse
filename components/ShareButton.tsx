@@ -2,13 +2,11 @@
 import { ShareIcon } from '@heroicons/react/24/outline';
 import React from 'react'
 
-const ShareButton = ({ title, desc }: { title: string, desc: string }) => {
+const ShareButton = ({ title, }: { title: string}) => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
                 title: title,
-                text: desc,
-                url: 'http://localhost:3000',
             })
                 .then(() => console.log('Successful share'))
                 .catch((error) => console.log('Error sharing', error));
