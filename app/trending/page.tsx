@@ -4,7 +4,7 @@ import { db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
 import { query, collection, orderBy, getDocs, limit, QueryDocumentSnapshot } from "firebase/firestore";
 
-const page = async () => {
+const Page = async () => {
     const postsRef = collection(db, "posts");
     const snippetQuery = query(postsRef, orderBy("like", "desc"), limit(5));
     const snippetDocs = await getDocs(snippetQuery);
@@ -32,4 +32,4 @@ const page = async () => {
     );
 };
 
-export default page;
+export default Page;

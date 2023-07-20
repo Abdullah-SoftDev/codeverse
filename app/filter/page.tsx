@@ -3,7 +3,7 @@ import { db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
-const page = async({ searchParams }: { searchParams: { category: string | string[] | undefined }}) => {
+const Page = async({ searchParams }: { searchParams: { category: string | string[] | undefined }}) => {
   const { category } = searchParams; // Extracting uid from params object
   const productsRef = collection(db, 'posts');
   const querySnapshot = await getDocs(query(productsRef, where('category', '==', category)));
@@ -27,4 +27,4 @@ const page = async({ searchParams }: { searchParams: { category: string | string
   )
 }
 
-export default page
+export default Page

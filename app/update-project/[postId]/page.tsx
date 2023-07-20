@@ -4,7 +4,7 @@ import Form from "@/components/Form";
 import { PostData } from "@/types/typescript.types";
 import Modal from "@/components/Modal";
 
-const page = async ({ params }: { params: { postId: string } }) => {
+const Page = async ({ params }: { params: { postId: string } }) => {
   const { postId } = params; // Extracting postId from params object
   const docSnapshot = await getDoc(doc(db, "posts", postId)); // Retrieving document snapshot for the specified postId
   const data = docSnapshot.data() as PostData; // Explicitly cast doc.data() as PostData
@@ -17,4 +17,4 @@ Update Project                </h1>
   </Modal>
 };
 
-export default page;
+export default Page;

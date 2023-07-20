@@ -1,4 +1,3 @@
-"use client";
 import Modal from "@/components/Modal";
 import Postcard from "@/components/Postcard";
 import { auth, db } from "@/firebase/firebaseConfig";
@@ -7,10 +6,10 @@ import { collection, getDocs, doc, WriteBatch, writeBatch, orderBy, query, Docum
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-const page = () => {
+const Page = () => {
   const [user] = useAuthState(auth);
   const [myProject, setMyProject] = useState<PostData[]>([]);
-  const [loading, setLoading] = useState(true); // Set loading to true initially
+  const [loading, setLoading] = useState(true);
 
   const getMyProject = async (userId: string) => {
     setLoading(true);
@@ -18,7 +17,7 @@ const page = () => {
       const snippetQuery = query(collection(db, `users/${userId}/posts`), orderBy("createdAt", "desc"));
       const snippetDocs = await getDocs(snippetQuery);
       const posts: PostData[] = snippetDocs.docs.map((doc) => {
-        const data = doc.data() as PostData; // Explicitly cast doc.data() as PostData
+        const data = doc.data() as PostData;
         return {
           ...data,
         };
@@ -27,7 +26,7 @@ const page = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setLoading(false); // Ensure that loading is set to false even if there's an error
+      setLoading(false);
     }
   };
 
@@ -55,4 +54,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

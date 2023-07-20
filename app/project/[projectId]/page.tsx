@@ -4,7 +4,7 @@ import { PostData } from "@/types/typescript.types";
 import { getDoc, doc, DocumentData } from "firebase/firestore";
 import Link from "next/link";
 
-const page = async ({ params,searchParams  }: { params: { projectId: string , creatorUid:string} ,   searchParams: { creatorUid?: string | string[] | undefined };
+const Page = async ({ params,searchParams  }: { params: { projectId: string , creatorUid:string} ,   searchParams: { creatorUid?: string | string[] | undefined };
 }) => {
     const { projectId } = params; // Extracting postId from params object
     const { creatorUid } = searchParams; // Extracting postId from params object
@@ -56,4 +56,4 @@ const page = async ({ params,searchParams  }: { params: { projectId: string , cr
     )
   }
 
-  export default page
+  export default Page
