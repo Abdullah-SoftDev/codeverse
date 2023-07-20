@@ -6,7 +6,7 @@ const ShareButton = ({ title ,desc}: { title: string,desc:string}) => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: `${title}`,
+                text: `${title}`,
                 // text: `${title} - ${desc}`, // Combine title and description in the text property
             })
                 .then(() => console.log('Successful share'))
