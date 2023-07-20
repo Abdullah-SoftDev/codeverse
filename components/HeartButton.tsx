@@ -19,6 +19,11 @@ const HeartButton = ({
 
   const addHeart = async (e: FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert("Please log in to add a heart.");
+      return;
+    }
+  
     const userPostHeartRef = doc(
       db,
       `users/${creatorUid}/posts/${postId}/hearts/${user?.uid}`
@@ -33,12 +38,17 @@ const HeartButton = ({
       await batch.commit();
       setDbLike((prevCount: number) => prevCount + 1);
     } catch (error) {
-      alert("Add Heart Error" + error);
+      alert("Add Heart Error: " + error);
     }
   };
-
+  
   const removeHeart = async (e: FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert("Please log in to remove the heart.");
+      return;
+    }
+  
     const userPostHeartRef = doc(
       db,
       `users/${creatorUid}/posts/${postId}/hearts/${user?.uid}`
@@ -53,7 +63,7 @@ const HeartButton = ({
       await batch.commit();
       setDbLike((prevCount: number) => prevCount - 1);
     } catch (error) {
-      alert("Remove Heart Error" + error);
+      alert("Remove Heart Error: " + error);
     }
   };
 

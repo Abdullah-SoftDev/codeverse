@@ -15,10 +15,20 @@ const BookmarkButton = ({ postId }: { postId: string }) => {
   );
 
   const handleAddBookmark = async (postId: string) => {
+    if (!user) {
+      alert("Please log in to add a bookmark.");
+      return;
+    }
+  
     await addBookmark(postId);
   };
-
+  
   const handleRemoveBookmark = async (postId: string, user: string) => {
+    if (!user) {
+      alert("Please log in to remove the bookmark.");
+      return;
+    }
+  
     await removeBookmark(postId, user);
   };
 
