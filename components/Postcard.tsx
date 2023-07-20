@@ -1,6 +1,6 @@
 'use client'
 import { PostData } from '@/types/typescript.types'
-import { BookmarkIcon, HeartIcon } from '@heroicons/react/24/outline'
+import { BookmarkIcon, HeartIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import ShareButton from './ShareButton'
@@ -8,11 +8,13 @@ import { db } from '@/firebase/firebaseConfig'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import HeartButton from './HeartButton'
 import BooksmarkButton from './BooksmarkButton'
+import { usePathname } from 'next/navigation'
 
-const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid,like }: PostData) => {
+const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid, like }: PostData) => {
     const [dbUser, setDbUser] = useState<DocumentData>({});
     const [loading, setLoading] = useState(true); // Set loading to true initially
     const [dbLike, setDbLike] = useState(like);
+    const pathName = usePathname();
 
     const getUser = async (userId: string) => {
         setLoading(true);
@@ -79,16 +81,21 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
             <div className="px-4 pb-3 flex items-center w-full justify-between">
                 <div className="flex space-x-3">
                     <BooksmarkButton
-            postId={postId}
-          />
+                        postId={postId}
+                    />
                     <ShareButton title={title} desc={desc} />
+                    {pathName === "/my-projects" &&
+                        <Link href={`/update-project/${postId}`}>
+                            <PencilIcon className="w-5 h-5 cursor-pointer" />
+                        </Link>
+                    }
                 </div>
                 <HeartButton
-            postId={postId}
-            dbLike={dbLike}
-            setDbLike={setDbLike}
-            creatorUid={creatorUid}
-          />
+                    postId={postId}
+                    dbLike={dbLike}
+                    setDbLike={setDbLike}
+                    creatorUid={creatorUid}
+                />
             </div>
         </div>
     )
