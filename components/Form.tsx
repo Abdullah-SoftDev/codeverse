@@ -119,6 +119,7 @@ const Form = () => {
         githubURL,
         category,
         createdAt: serverTimestamp() as Timestamp,
+        like:0,
       };
       batch.set(userPostRef, newpost);
       batch.set(generalPostRef, newpost);

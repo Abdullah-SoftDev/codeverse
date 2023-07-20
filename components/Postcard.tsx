@@ -6,10 +6,12 @@ import React, { useEffect, useState } from 'react'
 import ShareButton from './ShareButton'
 import { db } from '@/firebase/firebaseConfig'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
+import HeartButton from './HeartButton'
 
-const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid }: PostData) => {
+const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid,like }: PostData) => {
     const [dbUser, setDbUser] = useState<DocumentData>({});
     const [loading, setLoading] = useState(true); // Set loading to true initially
+    const [dbLike, setDbLike] = useState(like);
 
     const getUser = async (userId: string) => {
         setLoading(true);
@@ -78,10 +80,12 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
                     <BookmarkIcon className="w-5 h-5 cursor-pointer" />
                     <ShareButton title={title} desc={desc} />
                 </div>
-                <div className="flex">
-                    <HeartIcon className="w-5 h-5 cursor-pointer" />
-                    <span className="text-sm text-gray-600 ml-1">3</span>
-                </div>
+                <HeartButton
+            postId={postId}
+            dbLike={dbLike}
+            setDbLike={setDbLike}
+            creatorUid={creatorUid}
+          />
             </div>
         </div>
     )

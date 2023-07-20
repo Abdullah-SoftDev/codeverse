@@ -22,4 +22,12 @@ export type PostForm = {
     category: string,
     createdAt?: Timestamp;
     images: string[];
+    like: number;
+  };
+
+  export type HeartButtonProps = {
+    postId: string;
+    dbLike: number;
+    setDbLike: React.Dispatch<React.SetStateAction<number>>;
+    creatorUid: string;
   };
