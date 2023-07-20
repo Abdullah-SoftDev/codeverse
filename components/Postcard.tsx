@@ -7,6 +7,7 @@ import ShareButton from './ShareButton'
 import { db } from '@/firebase/firebaseConfig'
 import { DocumentData, doc, getDoc } from 'firebase/firestore'
 import HeartButton from './HeartButton'
+import BooksmarkButton from './BooksmarkButton'
 
 const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid,like }: PostData) => {
     const [dbUser, setDbUser] = useState<DocumentData>({});
@@ -77,7 +78,9 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
             </div>
             <div className="px-4 pb-3 flex items-center w-full justify-between">
                 <div className="flex space-x-3">
-                    <BookmarkIcon className="w-5 h-5 cursor-pointer" />
+                    <BooksmarkButton
+            postId={postId}
+          />
                     <ShareButton title={title} desc={desc} />
                 </div>
                 <HeartButton
