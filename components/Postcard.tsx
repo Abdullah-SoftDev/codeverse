@@ -85,7 +85,7 @@ const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, cate
                     <BooksmarkButton
                         postId={postId}
                     />
-                    <ShareButton title={title} desc={desc}/>
+                    <ShareButton title={title} creatorUid={creatorUid} postId={postId}/>
                     {pathName === "/my-projects" &&
                         <Link href={`/update-project/${postId}`}>
                             <PencilIcon className="w-5 h-5 cursor-pointer" />

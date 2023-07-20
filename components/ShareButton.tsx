@@ -1,12 +1,11 @@
-'use client'
 import { ShareIcon } from '@heroicons/react/24/outline';
-import React from 'react'
 
-const ShareButton = ({ title ,desc}: { title: string,desc:string}) => {
+const ShareButton = ({ title, creatorUid, postId }: { title: string, creatorUid: string, postId: string }) => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
                 text: `${title}`,
+                url: `https://codeverse-flax.vercel.app/project/${postId}?creatorUid=${creatorUid}`,
                 // text: `${title} - ${desc}`, // Combine title and description in the text property
             })
                 .then(() => console.log('Successful share'))
