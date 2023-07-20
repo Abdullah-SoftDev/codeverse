@@ -17,4 +17,5 @@ module.exports = {
   plugins: [
     require('tailwind-scrollbar-hide'),
     require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
   ],}
