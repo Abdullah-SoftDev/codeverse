@@ -21,12 +21,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link href='/' className="flex items-center">
-              <img
-                src='https://flexibble.vercel.app/logo.svg'
-                width={116}
-                height={43}
-                alt='logo'
-              />
+              <h1 className="text-2xl font-semibold italic text-gray-800">Codeverse</h1>
             </Link>
             <div className="hidden lg:ml-5 lg:flex lg:space-x-8 pt-1">
               <Link
@@ -45,7 +40,7 @@ const Navbar = () => {
               )}
               {user && (
                 <Link
-                  href="/my-projectscard
+                  href="/my-projects
                   "
                   className=" text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1  text-sm font-medium"
                 >
@@ -125,7 +120,7 @@ const Navbar = () => {
                     <Menu.Item>
                       {({ active }) => (
                         <Link
-                          href="/my-projectscard
+                          href="/my-projects
                           "
                           className={classNames(
                             active ? "bg-gray-100" : "",
