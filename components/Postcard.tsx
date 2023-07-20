@@ -1,15 +1,32 @@
+'use client'
 import { PostData } from '@/types/typescript.types'
 import { BookmarkIcon, HeartIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ShareButton from './ShareButton'
 import { db } from '@/firebase/firebaseConfig'
-import { doc, getDoc } from 'firebase/firestore'
-import { User } from 'firebase/auth'
-const Postcard = async ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid }: PostData) => {
-    const ref = doc(db, 'users', creatorUid);
-    const res = await getDoc(ref);
-    const user = res.data() as User;
+import { DocumentData, doc, getDoc } from 'firebase/firestore'
+
+const Postcard = ({ postId, title, desc, websiteURL, twitterURL, githubURL, category, createdAt, images, creatorUid }: PostData) => {
+    const [dbUser, setDbUser] = useState<DocumentData>({});
+    const [loading, setLoading] = useState(true); // Set loading to true initially
+
+    const getUser = async (userId: string) => {
+        setLoading(true);
+        const ref = doc(db, `users/${userId}`);
+        const res = await getDoc(ref);
+        if (res.exists()) {
+            const userData = res.data() as DocumentData;
+            setDbUser(userData);
+        }
+        setLoading(false);
+    };
+    useEffect(() => {
+        if (creatorUid) {
+            getUser(creatorUid);
+        }
+    }, [creatorUid]);
+
     return (
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <div className="aspect-w-3 aspect-h-4 relative group">
@@ -24,14 +41,21 @@ const Postcard = async ({ postId, title, desc, websiteURL, twitterURL, githubURL
                 </div>
             </div>
             <div className="p-4 flex justify-between w-full items-center">
-                <div className="flex items-center space-x-2 cursor-pointer">
-                    <img
-                        className="h-7 w-7 rounded-full"
-                        src={user?.photoURL!}
-                        alt=""
-                    />
-                    <h3 className="text-xl font-medium">{user?.displayName}</h3>
-                </div>
+                {loading ?
+                    <div className="animate-pulse">
+                        <div className="flex gap-4 items-center">
+                            <div className="h-10 w-10 rounded-full bg-gray-300"></div>
+                            <div className="w-40 h-4 bg-gray-300 rounded"></div>
+                        </div>
+                    </div>
+                    : <div className="flex items-center space-x-2 cursor-pointer">
+                        <img
+                            className="h-7 w-7 rounded-full"
+                            src={dbUser.photoURL!}
+                            alt=""
+                        />
+                        <h3 className="text-xl font-medium">{dbUser?.displayName}</h3>
+                    </div>}
                 <div className="flex space-x-4 cursor-pointer items-center">
                     <Link target="_blank" href={githubURL}>
                         <img

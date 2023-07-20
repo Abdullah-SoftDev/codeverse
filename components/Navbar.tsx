@@ -45,7 +45,7 @@ const Navbar = () => {
               )}
               {user && (
                 <Link
-                  href="/my-prompts"
+                  href="/my-projects"
                   className=" text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1  text-sm font-medium"
                 >
                   My projects
@@ -116,7 +116,7 @@ const Navbar = () => {
                     <Menu.Item>
                       {({ active }) => (
                         <Link
-                          href="/my-prompts"
+                          href="/my-projects"
                           className={classNames(
                             active ? "bg-gray-100" : "",
                             "lg:hidden inline-flex px-4 py-2 text-sm text-gray-700 w-full"
