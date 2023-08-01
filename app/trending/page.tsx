@@ -4,7 +4,18 @@ import { db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
 import { query, collection, orderBy, getDocs, limit, QueryDocumentSnapshot } from "firebase/firestore";
 
-const Page = async () => {
+export const dynamic = 'auto',
+  dynamicParams = true,
+  revalidate = 0,
+  fetchCache = 'auto',
+  runtime = 'nodejs',
+  preferredRegion = 'auto'
+  
+type Props = {
+    searchParams: { title: string };
+}
+const Page = async ({ searchParams }: Props) => {
+    console.log(searchParams?.title)
     const postsRef = collection(db, "posts");
     const snippetQuery = query(postsRef, orderBy("like", "desc"), limit(5));
     const snippetDocs = await getDocs(snippetQuery);

@@ -1,8 +1,14 @@
 import { db } from "@/firebase/firebaseConfig";
 import { PostData } from "@/types/typescript.types";
-import { query, collection, orderBy, limit, getDocs } from "firebase/firestore";
+import { query, collection, orderBy, getDocs } from "firebase/firestore";
 import Postcard from "./Postcard";
 
+export const dynamic = 'auto',
+  dynamicParams = true,
+  revalidate = 0,
+  fetchCache = 'auto',
+  runtime = 'nodejs',
+  preferredRegion = 'auto'
 
 export default async function Feed() {
   const snippetQuery = query(
@@ -11,7 +17,7 @@ export default async function Feed() {
   );
   const snippetDocs = await getDocs(snippetQuery);
   let posts: PostData[] = snippetDocs.docs.map((doc) => {
-    const data = doc.data() as PostData; // Explicitly cast doc.data() as PostData
+    const data = doc.data() as PostData;
     return {
       ...data,
     };
